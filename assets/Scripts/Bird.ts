@@ -1,17 +1,17 @@
-import { _decorator, Component, Node, input, Input, EventTouch, Vec3 } from 'cc';
+import { _decorator, Component, Node, input, Input, EventTouch, Vec3, AudioSource, Canvas } from 'cc';
 const { ccclass, property } = _decorator;
-import { Game, GameStatus } from './Game' 
+import { Game, GameStatus } from './Game'
+import { SoundType } from './Audio';
 
 @ccclass('Bird')
 export class Bird extends Component {
-    static positionBirdY: number;
+    static positionBirdY: number = 0;
     speed: number = 0;
-    static angle: number;
-    static speed: number;
+    static angle: number = 0;
 
     @property({type:Game})
         Game: Game
-    
+
     start() {
 
     }
@@ -27,6 +27,11 @@ export class Bird extends Component {
     update(deltaTime: number) {
         // If game status is not playing, stop movement of bird, and return
         if (this.Game.gameStatus != GameStatus.Game_Playing) {
+            Bird.positionBirdY = 0
+            Bird.angle = 0
+            this.speed = 0
+            this.node.position = new Vec3(0, Bird.positionBirdY, 0);
+            this.node.angle = Bird.angle;
             return;
         }
 
@@ -39,17 +44,14 @@ export class Bird extends Component {
             angle = 30;
         }
 
-        this.node.angle = angle;
         this.node.position = new Vec3(0, positionY, 0);
+        this.node.angle = angle;
         Bird.positionBirdY = this.node.position.y;
-        // console.log('Bird position: ', Bird.positionBird);
-        return Bird.positionBirdY, angle, Bird.speed;
+        return Bird.positionBirdY, angle;
     }
 
     onTouchStart (event: EventTouch) {
         this.speed = 2;
+        this.Game.Fly.play(SoundType.E_Sound_Fly);
     }
-
 }
-
-

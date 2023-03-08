@@ -1,7 +1,9 @@
-import { _decorator, Component, Node, Sprite, Vec3, Button, Label, Prefab, instantiate } from 'cc';
+import { _decorator, Component, Node, Sprite, Vec3, Button, Label, instantiate, AudioSource, sys, director, Scene, Slider } from 'cc';
+import { SoundType } from './Audio';
 const { ccclass, property } = _decorator;
 import { Bird } from './Bird'
 import { Pipe } from './Pipe'
+import { Audio } from './Audio';
 
 export enum GameStatus {
     Game_Ready = 0,
@@ -14,11 +16,11 @@ export class Game extends Component {
     @property({type:Sprite})
         Bg: Sprite [] = [null, null];
 
-    // @property({type:Prefab})
-    //     pipePrefab: Prefab = null
-
-    // Pipe node
+    // // Pipe node
     pipe: Node[] = [null];
+
+    @property({type: Pipe})
+        Pipe: Pipe
 
     // Game state
     gameStatus: GameStatus = GameStatus.Game_Ready
@@ -29,6 +31,15 @@ export class Game extends Component {
 
     @property({type:Sprite})
         GameOver: Sprite
+
+    @property({type:Sprite})
+        BirdYellow: Sprite
+
+    @property({type:Sprite})
+        BirdGreen: Sprite
+
+    @property({type:Sprite})
+        BirdRed: Sprite
 
     @property({type:Button})
         playBtn: Button = null
@@ -41,23 +52,82 @@ export class Game extends Component {
 
     @property({type:Label})
         ScoreResultLabel: Label
+
+    @property({type:Label})
+        HighScoreLabel: Label
+
+    @property({type:AudioSource})
+        Fly: Audio
+
+    @property({type:AudioSource})
+        Score: Audio
+    
+    @property({type:AudioSource})
+        Hit: Audio
+
+    @property({type:AudioSource})
+        Die: Audio
+
+    @property({type:Button})
+        SettingBtn: Button
+
+    @property({type:Sprite})
+        MenuPopup: Sprite
+
+    @property({type:Button})
+        CloseMenuPopup: Button
+
+    @property({type:Button})
+        ResumeBtn: Button
+
+    @property({type:Button})
+        YellowBird: Button
+
+    @property({type:Button})
+        GreenBird: Button
+
+    @property({type:Button})
+        RedBird: Button
+        
     // Record score
     gameScore: number = 0;
     gameScoreResult: number = 0;
+    gameHighScore: number = 0;
+    gameHighScoreArray: number[] = [];
 
     
 
     start() {
-        
+        this.MenuPopup.node.active = false;
+        let gameHighScore1 = localStorage.getItem('gameHighScoreArray');
+        if (gameHighScore1) {
+            this.gameHighScoreArray = JSON.parse(gameHighScore1);
+        }
+        console.log(gameHighScore1);
     }
-
+    
     onLoad() {
+        this.BirdYellow.node.active = true;
+        this.BirdGreen.node.active = false;
+        this.BirdRed.node.active = false;
         this.GameOver.node.active = false;
         this.restartBtn.node.active = false;
         this.ScoreResult.node.active = false;
         this.ScoreResultLabel.node.active = false;
+        this.Pipe[0].node.active = false;
+        this.HighScoreLabel.node.active = false;
+        console.log('1', this.Pipe[0].node.active);
         // this.restartBtn.node.active = false;
         this.playBtn.node.on(Node.EventType.TOUCH_END, this.touchPlayBtn, this);
+        this.SettingBtn.node.on(Node.EventType.TOUCH_END, this.touchSettingBtn, this);
+        this.CloseMenuPopup.node.on(Node.EventType.TOUCH_END, this.touchCloseSettingBtn, this);
+        this.ResumeBtn.node.on(Node.EventType.TOUCH_END, this.touchResumeBtn, this);
+        this.YellowBird.node.on(Node.EventType.TOUCH_END, this.touchYellowBird, this);
+        this.GreenBird.node.on(Node.EventType.TOUCH_END, this.touchGreenBird, this);
+        this.RedBird.node.on(Node.EventType.TOUCH_START, this.touchRedBird, this);
+        console.log(this.GreenBird.node.active);
+        console.log(this.YellowBird.node.active);
+        console.log(this.RedBird.node.active);
     }
     
     update(deltaTime: number) {
@@ -75,94 +145,200 @@ export class Game extends Component {
         }
         this.checkCollision();
     }
-
+    
+    createPipe() {
+        // create pipes
+        for (let i = 0; i < this.pipe.length; i++) {
+            this.Pipe[i].node = instantiate(this.Pipe[i].node);
+            this.node.addChild(this.Pipe[i].node);
+            
+            let pipeX = this.Pipe[i].node.position.x;
+            let pipeY = this.Pipe[i].node.position.y;
+            pipeX = 170 + 200 * i;
+            let minY = -120;
+            let maxY = 120;
+            pipeY = minY + Math.random() * (maxY - minY);
+            Pipe.positionPipeX  = this.Pipe[i].node.position.x;
+            Pipe.positionPipeY  = this.Pipe[i].node.position.y;
+        }
+    }
+    
     checkCollision() {
-        // console.log('birdx:', Bird.positionBird.x);
-        console.log('birdY:', Bird.positionBirdY);
-        console.log('pipex', Pipe.positionPipeX);
-        console.log('pipeY', Pipe.positionPipeY);
-
-        let delta = 60;
+        let delta = 65;
+        let angle = Bird.angle
         let birdY = Bird.positionBirdY;
         let pipeX = Pipe.positionPipeX;
         let pipeY = Pipe.positionPipeY;
         // console.log('pipeY', Pipe.positionPipe.y);
-        if (((pipeX > -26 && pipeX < 26) && ((birdY > pipeY + delta) || (birdY < pipeY - delta)))) 
+        if (((pipeX > -26 && pipeX < 26) && ((birdY  > pipeY + delta) || (birdY < pipeY - delta)))) 
         {
-            console.log('hit');
-            this.gameOver()
-            Bird.speed = 0;
-        }
-        else if (birdY > 288 && birdY < -288) 
-        {
-            console.log('hit');
+            // this.Pipe[0].node.position = new Vec3(420, 0, 0);
+            this.Hit.play(SoundType.E_Sound_Hit);
+            this.Die.play(SoundType.E_Sound_Die);
+            this.gameHighScoreArray.push(this.gameScore);
             this.gameOver();
-            Bird.speed = 0;
-
         }
-        else if (pipeX == 30) {
-            console.log('no hit');
+        else if (birdY > 260 || birdY < -260) 
+        {
+            // this.Pipe[0].node.position = new Vec3(420, 0, 0);
+            this.Hit.play(SoundType.E_Sound_Hit);
+            this.Die.play(SoundType.E_Sound_Die);
+            this.gameHighScoreArray.push(this.gameScore);
+            this.gameOver();
+            
+        }
+        else if (pipeX == 5) {
+            this.Score.play(SoundType.E_Sound_Score);  
+            console.log(this.gameHighScoreArray);
+            console.log(this.gameScore);
             this.gameScore++;
             this.scoreLabel.string = this.gameScore.toString();
+            this.gameStatus == GameStatus.Game_Playing
+            console.log(this.gameHighScore);
+            console.log(this.Pipe[0].node.position);
+            return this.gameScore;
         }
     }
 
+    addPoint() {
+        this.gameScore++;
+        this.gameHighScore = this.gameScore;
+        return this.gameHighScore;
+    }
+
     touchPlayBtn() {
+        this.GreenBird.node.active = false;
+        this.YellowBird.node.active = false;
+        this.RedBird.node.active = false;
         // Hide start button
+        director.resume();
         this.playBtn.node.active = false;
+
+        this.MenuPopup.node.active = false;
+
+        // this.restartBtn.node.active = false;
+
         // Set game status to playing
         this.gameStatus = GameStatus.Game_Playing;
+
+        this.Pipe[0].node.active = true;
 
         // Hide GameOver node
         this.GameOver.node.active = false;
         this.ScoreResult.node.active = false;
         this.ScoreResultLabel.node.active = false;
+        this.HighScoreLabel.node.active = false;
     }
 
     touchRestarButton() {
+        // director.reset();
+        director.loadScene("Game");
+        this.MenuPopup.node.active = false;
+        
+        // Hide start button
         this.restartBtn.node.active = false;
 
+        // Set game status to playing
         this.gameStatus = GameStatus.Game_Playing;
 
+        // this.Pipe[0].node.active = true;
+        Bird.positionBirdY = 0
+        Bird.angle = 0;
+        this.Bg[0].node.position = new Vec3(0, 0, 0);
+        this.Bg[1].node.position = new Vec3(288, 0, 0);
+        // this.Pipe[0].node.position = new Vec3(420, Pipe.positionPipeY, 0);
+
+        // Hide GameOver node
         this.GameOver.node.active = false;
-        this.scoreLabel.node.active = true;
         this.ScoreResult.node.active = false;
         this.ScoreResultLabel.node.active = false;
-        // // Reset position of all pipes
-        // for (let i = 0; i < this.pipe.length; i++) {
-            //     let pipeX = this.pipe[i].position.x;
-            //     let pipeY = this.pipe[i].position.y;
-            //     pipeX = 170 + 200 * i;
-            //     let minY = -120;
-            //     let maxY = 120;
-            //     pipeY = minY + Math.random() * (maxY - minY);
-        // }
-
-        // Reset angle and position of bird
-        let birdY = Bird.positionBirdY
-        let BirdAngle = Bird.angle;
-        birdY = 0;
-        BirdAngle = 0;
+        this.scoreLabel.node.active = true;
+        // this.Pipe[0].node.active = true;
+        console.log('Pipe position', this.Pipe[0].node.position);
+        
 
         // Reset score when restart game
         this.gameScore = 0;
         this.scoreLabel.string = this.gameScore.toString();
+        
+    }
+
+    touchSettingBtn() {
+        this.MenuPopup.node.active = true;
+        director.pause();
+        // console.log(this.MenuPopup.node.active);
+        this.CloseMenuPopup.node.on(Node.EventType.TOUCH_START, this.touchCloseSettingBtn, this);
+        this.ResumeBtn.node.on(Node.EventType.TOUCH_START, this.touchResumeBtn, this);
+        // if (this.MenuPopup.node.active == true) {
+        //     this.MenuPopup.node.active = false;
+        //     this.SettingBtn.node.on(Node.EventType.TOUCH_END, this.touchCloseSettingBtn, this);
+        // }
+    }
+
+    touchCloseSettingBtn() {
+        this.MenuPopup.node.active = false;
+        director.resume();
+    }
+    
+    touchResumeBtn() {
+        this.MenuPopup.node.active = false;
+        director.resume();
+    }
+
+    touchYellowBird() {
+        console.log('yellow', this.BirdYellow.node.active);
+        console.log('green', this.BirdGreen.node.active);
+        console.log('red', this.BirdRed.node.active);
+        this.BirdYellow.node.active = true;
+        this.BirdGreen.node.active = false;
+        this.BirdRed.node.active = false;
+    }
+
+    touchGreenBird() {
+        console.log('yellow', this.BirdYellow.node.active);
+        console.log('green', this.BirdGreen.node.active);
+        console.log('red', this.BirdRed.node.active);
+        this.BirdGreen.node.active = true;
+        this.BirdYellow.node.active = false;
+        this.BirdRed.node.active = false;
+    }
+
+    touchRedBird() {
+        console.log('yellow', this.BirdYellow.node.active);
+        console.log('green', this.BirdGreen.node.active);
+        console.log('red', this.BirdRed.node.active);
+        this.BirdRed.node.active = true;
+        this.BirdYellow.node.active = false;
+        this.BirdGreen.node.active = false;
     }
 
     gameOver() {
+        this.BirdYellow.node.active = false;
+        this.BirdGreen.node.active = false;
+        // this.BirdRed.node.active = false;
         this.GameOver.node.active = true;
         // When the game is over, show the play button
-        // this.playBtn.node.active = true;       
+        // this.playBtn.node.active = true;
         this.restartBtn.node.active = true;
         this.scoreLabel.node.active = false;
         this.ScoreResult.node.active = true;
         this.ScoreResultLabel.node.active = true;
+        this.HighScoreLabel.node.active = true;
+        this.MenuPopup.node.active = false;
+        // this.Pipe[0].node.active = false;
+
         // Change the game status to game over
         this.gameStatus = GameStatus.Game_Over
+
+        // this.Die.play(SoundType.E_Sound_Die);
+
+        // console.log(this.Pipe[0].node.position)
+        director.pause();
+        
         this.ScoreResultLabel.string = this.gameScore.toString();
+        localStorage.setItem('gameHighScoreArray', JSON.stringify(this.gameHighScoreArray));
+        this.HighScoreLabel.string = (Math.max(...this.gameHighScoreArray)).toString();
+        
         this.restartBtn.node.on(Node.EventType.TOUCH_END, this.touchRestarButton, this);
     }
-    
 }
-
-
