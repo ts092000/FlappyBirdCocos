@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, Vec3, Canvas, Sprite } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, Vec3, Canvas, Sprite, EventKeyboard, KeyCode, input, Input} from 'cc';
 const { ccclass, property } = _decorator;
 import { Game, GameStatus } from './Game' 
 
@@ -7,13 +7,11 @@ export class Pipe extends Component {
     @property({type:Prefab})
         pipePrefab: Prefab = null
 
-    @property({type:Game})
-        Game: Game 
-
     pipe: Node[] = [null];
 
     static positionPipeX: number;
     static positionPipeY: number;
+    static time: number;
 
     start() {
         // if (this.Game.gameStatus !== GameStatus.Game_Playing) {
@@ -39,6 +37,7 @@ export class Pipe extends Component {
     }
 
     update(deltaTime: number) {
+        Pipe.time = deltaTime;
         for (let i = 0; i < this.pipe.length; i++) {
             let pipeX = this.pipe[i].position.x;
             let pipeY = this.pipe[i].position.y;
@@ -54,6 +53,24 @@ export class Pipe extends Component {
             Pipe.positionPipeY  = this.pipe[i].position.y;
             this.pipe[i].position = new Vec3(pipeX, pipeY, 0);
             return Pipe.positionPipeX, Pipe.positionPipeY;
+        }
+        input.on(Input.EventType.KEY_DOWN, this.dashSkillKeyDown, this);
+        input.on(Input.EventType.KEY_UP, this.dashSkillKeyUp, this);
+        console.log(Pipe.time);
+        return Pipe.time;
+    }
+    
+    dashSkillKeyDown(event: EventKeyboard) {
+        switch(event.keyCode) {
+            case KeyCode.KEY_D:
+                Pipe.time += 0.5;
+        }
+    }
+
+    dashSkillKeyUp(event: EventKeyboard) {
+        switch(event.keyCode) {
+            case KeyCode.KEY_D:
+                Pipe.time = Pipe.time;
         }
     }
 }

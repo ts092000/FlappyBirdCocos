@@ -4,6 +4,7 @@ const { ccclass, property } = _decorator;
 import { Bird } from './Bird'
 import { Pipe } from './Pipe'
 import { Audio } from './Audio';
+import { Enemy } from './Enemy';
 
 export enum GameStatus {
     Game_Ready = 0,
@@ -21,6 +22,9 @@ export class Game extends Component {
 
     @property({type: Pipe})
         Pipe: Pipe
+
+    @property({type:Enemy})
+        Enemy: Enemy;
 
     // Game state
     gameStatus: GameStatus = GameStatus.Game_Ready
@@ -115,6 +119,7 @@ export class Game extends Component {
         this.ScoreResult.node.active = false;
         this.ScoreResultLabel.node.active = false;
         this.Pipe[0].node.active = false;
+        this.Enemy.node.active = false;
         this.HighScoreLabel.node.active = false;
         console.log('1', this.Pipe[0].node.active);
         // this.restartBtn.node.active = false;
@@ -222,6 +227,7 @@ export class Game extends Component {
         this.gameStatus = GameStatus.Game_Playing;
 
         this.Pipe[0].node.active = true;
+        this.Enemy.node.active = true;
 
         // Hide GameOver node
         this.GameOver.node.active = false;
@@ -231,8 +237,8 @@ export class Game extends Component {
     }
 
     touchRestarButton() {
-        // director.reset();
         director.loadScene("Game");
+        director.reset();
         this.MenuPopup.node.active = false;
         
         // Hide start button

@@ -1,7 +1,7 @@
 [
   {
     "__type__": "cc.AnimationClip",
-    "_name": "BirdGreenAnim",
+    "_name": "EnemyAnim",
     "_objFlags": 0,
     "__editorExtras__": {
       "embeddedPlayerGroups": []
@@ -11,7 +11,7 @@
     "speed": 1,
     "wrapMode": 2,
     "enableTrsBlending": false,
-    "_duration": 0.26666666666666666,
+    "_duration": 0.18333333333333332,
     "_hash": 500763545,
     "_tracks": [
       {
@@ -59,24 +59,19 @@
     "_times": [
       0,
       0.08333333333333333,
-      0.16666666666666666,
-      0.25
+      0.16666666666666666
     ],
     "_values": [
       {
-        "__uuid__": "24a7d812-616f-416c-bf7a-6c802e8dfaec@f9941",
+        "__uuid__": "ad6c73ef-3b3a-4ab1-92b1-4bfecfbbd3a9@f9941",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "5857e498-b4fa-4faa-b27b-3120092e7885@f9941",
+        "__uuid__": "5e5610f6-0a0d-48c0-b6ee-43e769a9a145@f9941",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "bcf3df21-e1cc-4f00-9761-b8705ec73cab@f9941",
-        "__expectedType__": "cc.SpriteFrame"
-      },
-      {
-        "__uuid__": "bcf3df21-e1cc-4f00-9761-b8705ec73cab@f9941",
+        "__uuid__": "ad6c73ef-3b3a-4ab1-92b1-4bfecfbbd3a9@f9941",
         "__expectedType__": "cc.SpriteFrame"
       }
     ]

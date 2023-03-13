@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, input, Input, EventTouch, Vec3, AudioSource, Canvas } from 'cc';
+import { _decorator, Component, Node, input, Input, EventTouch, Vec3, AudioSource, Canvas, Prefab, instantiate, tween, EventKeyboard, KeyCode } from 'cc';
 const { ccclass, property } = _decorator;
 import { Game, GameStatus } from './Game'
 import { SoundType } from './Audio';
