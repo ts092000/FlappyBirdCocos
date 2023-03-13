@@ -44,8 +44,6 @@ export class Pipe extends Component {
             let pipeY = this.pipe[i].position.y;
             Pipe.PipeX = pipeX;
             Pipe.PipeY = pipeY;
-            input.on(Input.EventType.KEY_DOWN, this.dashSkillKeyDown, this);
-            input.on(Input.EventType.KEY_UP, this.dashSkillKeyUp, this);
             Pipe.PipeX -= 1.0;
             if (Pipe.PipeX <= -170) {
                 Pipe.PipeX = 220;
@@ -57,6 +55,8 @@ export class Pipe extends Component {
             Pipe.positionPipeX  = this.pipe[i].position.x;
             Pipe.positionPipeY  = this.pipe[i].position.y;
             
+            input.on(Input.EventType.KEY_DOWN, this.dashSkillKeyDown, this);
+            input.on(Input.EventType.KEY_UP, this.dashSkillKeyUp, this);
             // if (input.on(Input.EventType.KEY_UP, this.dashSkillKeyUp, this)) {
             //     Pipe.PipeX -= 1.0;
             // }
@@ -84,8 +84,16 @@ export class Pipe extends Component {
                 Pipe.PipeX -= 150.0;
                 let movePipe = tween(this.pipe[0]).to(1.0 ,{position: new Vec3(Pipe.PipeX - 150.0, Pipe.PipeY, 0)});
                 movePipe.start();
-                console.log('press');
-                console.log('pressX', Pipe.PipeX);
+                // if (Pipe.PipeX <= -170) {
+                //     Pipe.PipeX = 220;
+                    
+                //     let minY = -120;
+                //     let maxY = 120;
+                //     Pipe.PipeY = minY + Math.random() * (maxY - minY);
+                // }
+                // Pipe.positionPipeX  = this.pipe[0].position.x;
+                // Pipe.positionPipeY  = this.pipe[0].position.y;
+                // this.pipe[0].position = new Vec3(Pipe.PipeX, Pipe.PipeY, 0);
                 // this.pipe[0].position = new Vec3(Pipe.PipeX, Pipe.PipeY, 0);
             break;
         }

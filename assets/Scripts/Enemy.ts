@@ -54,9 +54,9 @@ export class Enemy extends Component {
         for (let i = 0; i < this.enemy.length; i++) {
             let enemyX = this.enemy[i].position.x;
             let enemyY = this.enemy[i].position.y;
-            enemyX -= 1.0;
-            if (enemyX <= -160) {
-                enemyX = 160;               
+            enemyX -= 2.0;
+            if (enemyX <= -170) {
+                enemyX = 220;               
                 let minY = -100;
                 let maxY = 100;
                 enemyY = minY + Math.random() * (maxY - minY);
@@ -64,7 +64,9 @@ export class Enemy extends Component {
             Enemy.positionEnemyX  = this.enemy[i].position.x;
             Enemy.positionEnemyY  = this.enemy[i].position.y;
             this.enemy[i].position = new Vec3(enemyX, enemyY, 0);
-            // console.log('position', this.enemy[i].position);
+            console.log('enemy position : ', this.enemy[i].position);
+            console.log('enemy position x: ', this.enemy[i].position.x);
+            console.log('enemy position y: ', this.enemy[i].position.y);
             return Enemy.positionEnemyX, Enemy.positionEnemyY;
         }
     }

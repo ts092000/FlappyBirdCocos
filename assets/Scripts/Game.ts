@@ -169,13 +169,23 @@ export class Game extends Component {
     }
     
     checkCollision() {
-        let delta = 65;
-        let angle = Bird.angle
+        let delta1 = 65;
+        let angle = Bird.angle;
         let birdY = Bird.positionBirdY;
         let pipeX = Pipe.positionPipeX;
         let pipeY = Pipe.positionPipeY;
+        let enemyX = Enemy.positionEnemyX;
+        let enemyY = Enemy.positionEnemyY;
         // console.log('pipeY', Pipe.positionPipe.y);
-        if (((pipeX > -26 && pipeX < 26) && ((birdY  > pipeY + delta) || (birdY < pipeY - delta)))) 
+        if (((pipeX > -26 && pipeX < 26) && ((birdY  > pipeY + delta1) || (birdY < pipeY - delta1)))) 
+        {
+            // this.Pipe[0].node.position = new Vec3(420, 0, 0);
+            this.Hit.play(SoundType.E_Sound_Hit);
+            this.Die.play(SoundType.E_Sound_Die);
+            this.gameHighScoreArray.push(this.gameScore);
+            this.gameOver();
+        }
+        else if ((enemyX > -50 && enemyX < 50) && (birdY  <= enemyY + 20 && birdY >= enemyY - 20))
         {
             // this.Pipe[0].node.position = new Vec3(420, 0, 0);
             this.Hit.play(SoundType.E_Sound_Hit);

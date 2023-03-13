@@ -47,6 +47,7 @@ export class Bird extends Component {
         this.node.position = new Vec3(0, positionY, 0);
         this.node.angle = angle;
         Bird.positionBirdY = this.node.position.y;
+        console.log('Bird', this.node.position);
         return Bird.positionBirdY, angle;
     }
 
