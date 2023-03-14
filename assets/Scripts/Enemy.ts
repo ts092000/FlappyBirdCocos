@@ -64,9 +64,9 @@ export class Enemy extends Component {
             Enemy.positionEnemyX  = this.enemy[i].position.x;
             Enemy.positionEnemyY  = this.enemy[i].position.y;
             this.enemy[i].position = new Vec3(enemyX, enemyY, 0);
-            console.log('enemy position : ', this.enemy[i].position);
-            console.log('enemy position x: ', this.enemy[i].position.x);
-            console.log('enemy position y: ', this.enemy[i].position.y);
+            // console.log('enemy position : ', this.enemy[i].position);
+            // console.log('enemy position x: ', this.enemy[i].position.x);
+            // console.log('enemy position y: ', this.enemy[i].position.y);
             return Enemy.positionEnemyX, Enemy.positionEnemyY;
         }
     }

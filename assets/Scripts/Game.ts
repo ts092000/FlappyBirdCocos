@@ -185,7 +185,7 @@ export class Game extends Component {
             this.gameHighScoreArray.push(this.gameScore);
             this.gameOver();
         }
-        else if ((enemyX > -50 && enemyX < 50) && (birdY  <= enemyY + 20 && birdY >= enemyY - 20))
+        else if ((enemyX > -50 && enemyX < 30) && (birdY  <= enemyY + 20 && birdY >= enemyY - 20))
         {
             // this.Pipe[0].node.position = new Vec3(420, 0, 0);
             this.Hit.play(SoundType.E_Sound_Hit);

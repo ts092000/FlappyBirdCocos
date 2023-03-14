@@ -1,7 +1,6 @@
 import { _decorator, Component, Node, Prefab, input, Input, EventKeyboard, instantiate, Vec3, tween, KeyCode } from 'cc';
 const { ccclass, property } = _decorator;
 import { Bird } from './Bird'
-import { ObjectPool } from './ObjectPool'
 
 @ccclass('Bullet')
 export class Bullet extends Component {
@@ -21,16 +20,17 @@ export class Bullet extends Component {
 
     onLoad() {
         input.on(Input.EventType.KEY_DOWN, this.moveBulletKeyDown, this);
-        // input.on(Input.EventType.KEY_UP, this.moveBulletKeyUp, this);
     }
     
     onDestroy () {
         input.off(Input.EventType.KEY_DOWN, this.moveBulletKeyDown, this);
-        // input.off(Input.EventType.KEY_UP, this.moveBulletKeyUp, this);
     }
     
     update(deltaTime: number) {
+        input.on(Input.EventType.KEY_DOWN, this.moveBulletKeyDown, this);
+        // console.log(this.node.position);
         // console.log('object', Object.position);
+        // console.log('bullet: ', this.node.position);
     }
 
     moveBulletKeyDown(event: EventKeyboard) {
@@ -48,13 +48,17 @@ export class Bullet extends Component {
                 let newBullet = instantiate(this.bulletPrefab);
                 newBullet.setPosition(new Vec3(0, Bird.positionBirdY, 0));
                 this.node.addChild(newBullet);
+                // newBullet.setPosition(new Vec3(this.node.position.x + 240, Bird.positionBirdY, 0));
         
                 // let Object =  this.ObjectPool.GetPooledOjects();
                 // Object.setPosition(new Vec3(0, Bird.positionBirdY,0));
                 // console.log('obj: ', Object);
-                let moveBullet = tween(newBullet).to(1.0 ,{position: new Vec3(this.node.position.x + 240, this.node.position.y + Bird.positionBirdY, 0)})
-                let stopBullet = tween(newBullet).stop();
+                let moveBullet = tween(newBullet).to(1.0 ,{position: new Vec3(this.node.position.x + 240, this.node.position.y + Bird.positionBirdY, 0)});
                 moveBullet.removeSelf().start();
+                let bulletPos = newBullet.getPosition();
+                bulletPos.x += 240;
+                bulletPos.y = this.node.position.y + Bird.positionBirdY;
+                console.log(bulletPos);
                 // Object.setPosition(new Vec3(0, Bird.positionBirdY,0));
                 // // console.log('Objectpos1',Object.getPosition());
                 //     let moveBullet = tween(Object.position).to(1.0, new Vec3(Object.position.x + 241, Bird.positionBirdY, 0), {                        
